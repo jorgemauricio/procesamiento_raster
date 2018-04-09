@@ -100,5 +100,9 @@ ENV/
 #data
 /data
 
+#resultados
+/resultados
+
+
 # mypy
 .mypy_cache/
