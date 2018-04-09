@@ -18,44 +18,34 @@ import pandas as pd
 import numpy as np
 import os
 
-# main
 def main():
-
     # path
     path = "/home/jorge/Documents/Research/procesamiento_raster/data"
 
     # variable de archivos
-    lista_de_archivos = [x for x in os.listdir(path) if x.endswith('.xyz')]
+    lista_de_archivos = [x for x in os.listdir(path) if x.endswith('.csv')]
 
-    primer_df = True
+    # variable primer archivo
+    primer_ciclo = True
 
+    # ciclo for
     for i in lista_de_archivos:
-
         nombre_archivo, extension = i.split(".")
-
         ruta_del_archivo = "{}/{}".format(path, i)
 
-        # leer archivo
-        data = pd.read_csv(ruta_del_archivo, sep="\s+", header=None, nrows=10000000)
+        nombre_variable, extension2 = nombre_archivo.split("_pp")
+        print(nombre_variable
+        )
+        data = pd.read_csv(ruta_del_archivo)
 
-        # variable de columnas
-        cols = ["x","y", nombre_archivo]
+        if primer_ciclo:
+            dataFinal = data
+            primer_ciclo = False
+        else:
+            dataFinal[nombre_variable] = data[nombre_variable]
 
-        # asignar columnas
-        data.columns = cols
+    ruta_del_archivo_final = "{}/archivo_procesado.csv".format(path)
+    dataFinal.to_csv(ruta_del_archivo_final)
 
-        # delimitar valores de x
-        data = data.loc[data["x"] >= 672496]
-
-        # delimitar valores de y
-        data = data.loc[data["y"] >= 2834425]
-
-        # delimitar valores de índice
-        data = data.loc[data[nombre_archivo] >= 0]
-
-        nombre_archivo_exportar = "{}/{}_pp.csv".format(path, nombre_archivo)
-        data.to_csv(nombre_archivo_exportar)
-
-# if
 if __name__ == '__main__':
     main()
