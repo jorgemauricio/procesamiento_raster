@@ -20,33 +20,78 @@ import os
 import math
 
 def main():
-    # path
-    path = "/home/jorge/Documents/Research/procesamiento_raster/data"
+
+    # VARIABLES
+    BUFFER_DEL_PUNTO = 4
+
+    # columnas
+    # ID,PARCELA,X,Y,TIPO
+
+    # path archivos csv
+    path_archivos_csv = "/home/jorge/Documents/Research/procesamiento_raster/data"
+
+    #path_leer_archivo
+    path_archivo_puntos = "/home/jorge/Documents/Research/procesamiento_raster/coordenadas.csv"
 
     # variable de archivos
-    lista_de_archivos = [x for x in os.listdir(path) if x.endswith('.csv')]
+    lista_de_archivos = [x for x in os.listdir(path_archivos_csv) if x.endswith('_pp.csv')]
 
-    # variable primer archivo
+    # dataFrame puntos
+    df_puntos = pd.read_csv(path_archivo_puntos)
+
+    # ciclo de puntos
     primer_ciclo = True
 
-    # ciclo for
-    for i in lista_de_archivos:
-        nombre_archivo, extension = i.split(".")
-        ruta_del_archivo = "{}/{}".format(path, i)
+    # array columnas
 
-        nombre_variable, extension2 = nombre_archivo.split("_pp")
-        print(nombre_variable
-        )
-        data = pd.read_csv(ruta_del_archivo)
+    cols = ["x", "y", "ID", "PARCELA", "TIPO"]
 
-        if primer_ciclo:
-            dataFinal = data
-            primer_ciclo = False
-        else:
-            dataFinal[nombre_variable] = data[nombre_variable]
+    for index, row in df_puntos.iterrows():
 
-    ruta_del_archivo_final = "{}/archivo_procesado.csv".format(path)
-    dataFinal.to_csv(ruta_del_archivo_final)
+        x = row["x"]
+        y = row["y"]
+        numero = row["ID"]
+        parcela = row["PARCELA"]
+        tipo = row["TIPO"]
+
+        # ciclo for
+        for i in lista_de_archivos:
+            nombre_archivo, extension = i.split(".")
+            ruta_del_archivo = "{}/{}".format(path_archivos_csv, i)
+
+            # generar nombre de la variable
+            nombre_variable, extension2 = nombre_archivo.split("_pp")
+            print(nombre_variable)
+
+            # leer archivo a procesar
+            data = pd.read_csv(ruta_del_archivo)
+
+            # generar xi, yi, xf, yf
+            xi = x - BUFFER_DEL_PUNTO
+            yi = y - BUFFER_DEL_PUNTO
+
+            xf = x + BUFFER_DEL_PUNTO
+            yf = y + BUFFER_DEL_PUNTO
+
+            # acotar el área de procesamiento
+            data = data.loc[data["x"] >= xi]
+            data = data.loc[data["x"] <= xf]
+
+            data = data.loc[data["y"] >= yi]
+            data = data.loc[data["y"] <= yf]
+
+            data["ID"] = numero
+            data["PARCELA"] = parcela
+            data["TIPO"] = tipo
+
+            #data["x"] = data["x"].astype(int)
+            #data["y"] = data["y"].astype(int)
+
+            print("data",data.head())
+
+            # nombre archivo procesado
+            nombre_archivo_exportar = "/home/jorge/Documents/Research/procesamiento_raster/resultados/{}_{}_{}_{}.csv".format(nombre_variable, numero, parcela, tipo)
+            data.to_csv(nombre_archivo_exportar, index=False)
 
 if __name__ == '__main__':
     main()
