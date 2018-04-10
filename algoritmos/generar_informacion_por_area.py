@@ -87,7 +87,7 @@ def main():
             #data["x"] = data["x"].astype(int)
             #data["y"] = data["y"].astype(int)
 
-            print("data",data.head())
+        #    print("data",data.head())
 
             # nombre archivo procesado
             nombre_archivo_exportar = "/home/jorge/Documents/Research/procesamiento_raster/resultados/{}_{}_{}_{}.csv".format(nombre_variable, numero, parcela, tipo)
